@@ -1,7 +1,7 @@
+import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:google_maps/Class/location_class.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../Dataset/DataSet_Angel.dart';
+import '../Dataset/dataset.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import './PlotListScenes.dart';
 import './favScreen.dart';
@@ -16,23 +16,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   static LatLng targ = const LatLng(40.916967, -73.117652);
 
-  CameraPosition _stonyBrook = CameraPosition(
+  final CameraPosition _stonyBrook = CameraPosition(
     target: targ,
     zoom: 17,
   );
+  bool clicked = true;
 
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   bool display1 = true;
+  Set<Polygon> polygons = HashSet<Polygon>();
   @override
   Widget build(BuildContext context) {
-    Set<Polygon> polygons = {lot1.poly, lot2.poly};
-
     return SideMenu(
       key: _sideMenuKey,
       menu: buildMenu(context),
       background: const Color.fromARGB(255, 255, 255, 191),
       closeIcon: const Icon(Icons.close_sharp, color: Colors.black),
-      type: SideMenuType.slide, // check above images
+      type: SideMenuType.slide,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 255, 255, 129),
@@ -62,6 +62,35 @@ class _HomeState extends State<Home> {
           zoomControlsEnabled: true,
           mapToolbarEnabled: true,
         ),
+        floatingActionButton: clicked
+            ? FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    clicked = !clicked;
+                  });
+                },
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.local_parking),
+              )
+            : FloatingActionButton.extended(
+                elevation: 2,
+                label: const Text(
+                  "I'm Parked",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    clicked = !clicked;
+                  });
+                },
+                enableFeedback: true,
+                backgroundColor: Colors.green,
+              ),
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterFloat,
       ),
     );
   }
@@ -194,22 +223,6 @@ Widget buildMenu(context) {
             ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 180.0),
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-            ),
-            onPressed: () {},
-            child: const Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                "I'm Parked",
-                style: TextStyle(fontSize: 17),
-              ),
-            ),
-          ),
-        )
       ],
     ),
   );
