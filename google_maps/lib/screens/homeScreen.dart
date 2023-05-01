@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps/Class/location_class.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'Dataset/DataSet_Angel.dart';
+import '../Dataset/DataSet_Angel.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import './PlotListScenes.dart';
+import './favScreen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,82 +14,23 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static LatLng targ = const LatLng(40.917711, -73.122876);
-
-  @override
-  void initState() {
-    targ = LatLng(40.917711, -73.122876);
-    super.initState();
-  }
+  static LatLng targ = const LatLng(40.916967, -73.117652);
 
   CameraPosition _stonyBrook = CameraPosition(
     target: targ,
-    zoom: 14.5,
+    zoom: 17,
   );
-  void Change(bool variable) {
-    setState(() {
-      variable = !variable;
-    });
-  }
 
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   bool display1 = true;
   @override
   Widget build(BuildContext context) {
-    Polygon polygonDraw(
-        {required BuildContext context,
-        required ParkingLocation name,
-        required bool vis,
-        required Key key}) {
-      return Polygon(
-        polygonId: PolygonId(name.id),
-        points: name.LngLat,
-        fillColor: const Color.fromARGB(255, 255, 255, 184),
-        geodesic: true,
-        strokeWidth: 0,
-        visible: vis,
-        consumeTapEvents: true,
-        onTap: () {
-          print("object");
-          // if (!vis) {
-          //   showModalBottomSheet(
-          //       context: context,
-          //       builder: (BuildContext context) {
-          //         return Column(
-          //           children: [
-          //             BackButton(
-          //               onPressed: () {
-          //                 Navigator.pop(context);
-          //                 Change(vis);
-          //               },
-          //             ),
-          //             Text(
-          //               name.LotName,
-          //               style: const TextStyle(fontSize: 30),
-          //             ),
-          //           ],
-          //         );
-          //       });
-          // }
-          Change(vis);
-        },
-      );
-    }
-
-    Set<Polygon> polygons = {
-      polygonDraw(
-          name: lot1, context: context, vis: display1, key: Key(lot1.id)),
-      Polygon(
-          polygonId: PolygonId(lot2.id),
-          points: lot2.LngLat,
-          fillColor: Colors.blueAccent,
-          visible: display1,
-          strokeWidth: 1),
-    };
+    Set<Polygon> polygons = {lot1.poly, lot2.poly};
 
     return SideMenu(
       key: _sideMenuKey,
-      menu: buildMenu(), background: Color.fromARGB(255, 255, 255, 191),
+      menu: buildMenu(context),
+      background: const Color.fromARGB(255, 255, 255, 191),
       closeIcon: const Icon(Icons.close_sharp, color: Colors.black),
       type: SideMenuType.slide, // check above images
       child: Scaffold(
@@ -114,15 +57,17 @@ class _HomeState extends State<Home> {
         body: GoogleMap(
           initialCameraPosition: _stonyBrook,
           compassEnabled: true,
-          mapType: MapType.satellite,
+          mapType: MapType.normal,
           polygons: polygons,
+          zoomControlsEnabled: true,
+          mapToolbarEnabled: true,
         ),
       ),
     );
   }
 }
 
-Widget buildMenu() {
+Widget buildMenu(context) {
   return SingleChildScrollView(
     padding: const EdgeInsets.symmetric(vertical: 10.0),
     child: Column(
@@ -155,7 +100,27 @@ Widget buildMenu() {
               ),
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const Home(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(5.0, 0.0);
+                      const end = Offset.zero;
+                      final tween = Tween(begin: begin, end: end);
+                      final offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
               leading: const Icon(Icons.location_on,
                   size: 20.0, color: Colors.black),
               title: const Text(
@@ -166,7 +131,27 @@ Widget buildMenu() {
               dense: true,
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        pList(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(5.0, 0.0);
+                      const end = Offset.zero;
+                      final tween = Tween(begin: begin, end: end);
+                      final offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
               leading: const Icon(Icons.local_parking,
                   size: 20.0, color: Colors.black),
               title: const Text(
@@ -177,7 +162,27 @@ Widget buildMenu() {
               dense: true,
             ),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        favList(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(5.0, 0.0);
+                      const end = Offset.zero;
+                      final tween = Tween(begin: begin, end: end);
+                      final offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
               leading:
                   const Icon(Icons.favorite, size: 20.0, color: Colors.black),
               title: const Text(
@@ -193,11 +198,16 @@ Widget buildMenu() {
           padding: const EdgeInsets.only(top: 180.0),
           child: ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 122, 82, 255)),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
             ),
             onPressed: () {},
-            child: const Text('Show all Parking lots'),
+            child: const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                "I'm Parked",
+                style: TextStyle(fontSize: 17),
+              ),
+            ),
           ),
         )
       ],

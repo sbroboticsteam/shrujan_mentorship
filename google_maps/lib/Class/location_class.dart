@@ -5,11 +5,12 @@ class ParkingLocation {
   final String id;
   final String LotName;
   final List<LatLng> LngLat;
-  //final Polygon poly;
+  final Polygon poly;
 
   ParkingLocation({
     required this.id,
     required this.LotName,
     required this.LngLat,
+    required this.poly,
   });
 }
