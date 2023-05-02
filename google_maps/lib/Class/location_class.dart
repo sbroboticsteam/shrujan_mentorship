@@ -6,11 +6,13 @@ class ParkingLocation {
   final String LotName;
   final List<LatLng> LngLat;
   final Polygon poly;
+  String address = '';
 
   ParkingLocation({
     required this.id,
     required this.LotName,
     required this.LngLat,
     required this.poly,
+    required this.address,
   });
 }

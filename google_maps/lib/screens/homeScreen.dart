@@ -5,6 +5,7 @@ import '../Dataset/dataset.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import './PlotListScenes.dart';
 import './favScreen.dart';
+import '../Class/location_class.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,6 +26,15 @@ class _HomeState extends State<Home> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   bool display1 = true;
   Set<Polygon> polygons = HashSet<Polygon>();
+
+  void addPolygon(
+      {required ParkingLocation lotName, required Set<Polygon> set}) {
+    setState(() {
+      polygons.clear();
+      polygons.add(lotName.poly);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SideMenu(
