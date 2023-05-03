@@ -46,10 +46,9 @@ class _tileState extends State<tile> {
             IconButton(
                 onPressed: () {
                   setState(() {
-                    if (!widget.isclicked) {
+                    if (!widget.isclicked &
+                        !saveLots.contains(widget.lotName)) {
                       addFaviorite(widget.lotName);
-                    } else {
-                      removeFavorite(widget.lotName);
                     }
                     widget.isclicked = !widget.isclicked;
                   });

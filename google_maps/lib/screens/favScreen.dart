@@ -3,10 +3,17 @@ import 'package:google_maps/Widgets/titleWidget.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import './homeScreen.dart';
 import '../Widgets/titleWidget_fav.dart';
+import '../Class/location_class.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class favList extends StatelessWidget {
+class favList extends StatefulWidget {
   favList({super.key});
 
+  @override
+  State<favList> createState() => _favListState();
+}
+
+class _favListState extends State<favList> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
 
   @override
@@ -55,12 +62,51 @@ class FavoriteList extends StatefulWidget {
 }
 
 class _FavoriteListState extends State<FavoriteList> {
+  void removeFavorite(ParkingLocation lot) {
+    if (saveLots.contains(lot)) {
+      setState(() {
+        saveLots.remove(lot);
+      });
+    }
+  }
+
+  void onNavigate(ParkingLocation lot) {
+    CameraPosition lotDisp =
+        CameraPosition(target: lot.LngLat.elementAt(0), zoom: 17);
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const Home(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(5.0, 0.0);
+          const end = Offset.zero;
+          final tween = Tween(begin: begin, end: end);
+          final offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
+    setState(() {
+      disp_polygons.clear();
+      disp_polygons.add(lot.poly);
+      disp_camera.clear();
+      disp_camera.add(lotDisp);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         itemBuilder: (context, index) {
           return tileFav(
-            onPresed: () {},
+            iconFunction: () => removeFavorite(saveLots.elementAt(index)),
+            onPresed: () {
+              onNavigate(saveLots.elementAt(index));
+            },
             lotName: saveLots.elementAt(index),
             key: Key(saveLots.elementAt(index).id),
           );

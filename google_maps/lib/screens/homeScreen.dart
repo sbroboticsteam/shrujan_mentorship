@@ -1,11 +1,12 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../Dataset/dataset.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import './PlotListScenes.dart';
 import './favScreen.dart';
-import '../Class/location_class.dart';
+
+Set<Polygon> disp_polygons = HashSet<Polygon>();
+List<CameraPosition> disp_camera = [];
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,25 +16,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static LatLng targ = const LatLng(40.916967, -73.117652);
-
-  final CameraPosition _stonyBrook = CameraPosition(
-    target: targ,
-    zoom: 17,
+  final CameraPosition _stonyBrook = const CameraPosition(
+    target: LatLng(40.916548, -73.123077),
+    zoom: 14,
   );
+  @override
+  void initState() {
+    disp_camera.add(_stonyBrook);
+    super.initState();
+  }
+
   bool clicked = true;
 
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   bool display1 = true;
-  Set<Polygon> polygons = HashSet<Polygon>();
-
-  void addPolygon(
-      {required ParkingLocation lotName, required Set<Polygon> set}) {
-    setState(() {
-      polygons.clear();
-      polygons.add(lotName.poly);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +61,10 @@ class _HomeState extends State<Home> {
           ),
         ),
         body: GoogleMap(
-          initialCameraPosition: _stonyBrook,
+          initialCameraPosition: disp_camera.first,
           compassEnabled: true,
           mapType: MapType.normal,
-          polygons: polygons,
+          polygons: disp_polygons,
           zoomControlsEnabled: true,
           mapToolbarEnabled: true,
         ),

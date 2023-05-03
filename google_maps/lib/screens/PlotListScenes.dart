@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import './homeScreen.dart';
 import '../Widgets/titleWidget.dart';
@@ -12,12 +13,46 @@ final isClicked = List<bool>.generate(
   },
 );
 
-class pList extends StatelessWidget {
+class pList extends StatefulWidget {
   pList({super.key});
+
+  @override
+  State<pList> createState() => _pListState();
+}
+
+class _pListState extends State<pList> {
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
 
   @override
   Widget build(BuildContext context) {
+    void onNavigate(ParkingLocation lot) {
+      CameraPosition lotDisp =
+          CameraPosition(target: lot.LngLat.elementAt(0), zoom: 17);
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const Home(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(5.0, 0.0);
+            const end = Offset.zero;
+            final tween = Tween(begin: begin, end: end);
+            final offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        ),
+      );
+      setState(() {
+        disp_polygons.clear();
+        disp_polygons.add(lot.poly);
+        disp_camera.clear();
+        disp_camera.add(lotDisp);
+      });
+    }
+
     return SideMenu(
       key: _sideMenuKey,
       menu: buildMenu(context),
@@ -52,15 +87,16 @@ class pList extends StatelessWidget {
               lotName: lot1,
               key: Key(lot1.id),
               onPresed: () {
-                print(saveLots.elementAt(0).LotName);
-                print('clicked');
+                onNavigate(lot1);
               },
             ),
             tile(
               isclicked: isClicked.elementAt(1),
               lotName: lot2,
               key: Key(lot2.id),
-              onPresed: () {},
+              onPresed: () {
+                onNavigate(lot2);
+              },
             ),
             // tile(
             //   landMark: '',
@@ -162,11 +198,14 @@ class pList extends StatelessWidget {
             //   title: 'Lot-22',
             //   onPresed: () {},
             // ),
-            // tile(
-            //   landMark: '',
-            //   title: 'Lot-23',
-            //   onPresed: () {},
-            // ),
+            tile(
+              isclicked: isClicked.elementAt(23),
+              lotName: lot23,
+              key: Key(lot23.id),
+              onPresed: () {
+                onNavigate(lot23);
+              },
+            ),
             // tile(
             //   landMark: '',
             //   title: 'Lot-24',

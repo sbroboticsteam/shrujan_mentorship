@@ -3,22 +3,21 @@ import '../Class/location_class.dart';
 import './titleWidget.dart';
 
 class tileFav extends StatefulWidget {
-  tileFav({super.key, required this.onPresed, required this.lotName});
+  tileFav(
+      {super.key,
+      required this.onPresed,
+      required this.lotName,
+      required this.iconFunction});
 
   Function onPresed;
   ParkingLocation lotName;
+  Function iconFunction;
 
   @override
   State<tileFav> createState() => _tileFavState();
 }
 
 class _tileFavState extends State<tileFav> {
-  void removeFavorite(ParkingLocation lot) {
-    if (saveLots.contains(lot)) {
-      saveLots.remove(lot);
-    }
-  }
-
   bool isclicked = true;
   @override
   Widget build(BuildContext context) {
@@ -36,9 +35,7 @@ class _tileFavState extends State<tileFav> {
           children: [
             IconButton(
                 onPressed: () {
-                  setState(() {
-                    removeFavorite(widget.lotName);
-                  });
+                  widget.iconFunction();
                 },
                 icon: const Icon(
                   Icons.delete,
